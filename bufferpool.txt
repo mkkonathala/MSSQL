@@ -1,0 +1,26 @@
+Enable buffer pool extension
+-------------------------------------
+
+ALTER SERVER CONFIGURATION
+SET BUFFER POOL EXTENSION ON 
+(FILENAME='D:\mohan\MyCache.bpe',SIZE = 40GB)
+
+--view buffer pool extension details
+---------------------------------------------
+
+select * from sys.dm_os_buffer_pool_extension_configuration;
+
+--monitor buffer pool extension
+----------------------------------------
+
+select * from sys.dm_os_buffer_descriptors;
+
+--Diabale buffer pool extension
+---------------------------------------
+
+ALTER SERVER CONFIGURATION
+SET BUFFER POOL EXTENSION OFF;
+
+
+set statistics io on;
+

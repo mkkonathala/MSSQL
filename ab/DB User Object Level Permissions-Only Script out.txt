@@ -1,0 +1,59 @@
+--####################################################################################--
+--How to script object level permissions for a database
+--####################################################################################--
+DECLARE @db_id INT = Db_id ()
+
+SELECT @@servername 'TargetServer',
+       Db_name()    'TargetDB',
+       Getdate()    'Date'
+
+-- Section to identify the users and the respective database roles to which the user is associated with
+SELECT 'EXEC ' + Db_name(@db_id)
+       + '..sp_addrolemember @rolename  = '''
+       + sdp_role.name + ''', @membername = '''
+       + sdp_usr.name + '''' 'Query To Add DB Users To DB Roles',
+       sdp_usr.name          'DBUser',
+       sdp_role.name         'RoleName',
+       *
+FROM   sys.database_role_members sdrm
+       JOIN sys.database_principals sdp_role
+         ON ( sdrm.role_principal_id = sdp_role.principal_id )
+       JOIN sys.database_principals sdp_usr
+         ON ( sdrm.member_principal_id = sdp_usr.principal_id )
+WHERE  sdp_usr.name <> 'dbo'
+ORDER  BY sdp_usr.name,
+          sdp_role.name
+
+-- Section to display database - object level privilege to be granted to db users explicitly
+
+SELECT 'GRANT ' + sdp.permission_name + ' TO '
+       + db_usr.name COLLATE sql_latin1_general_cp1_ci_as
+       'Query to Grant DB rights',
+       db_usr.name                                        'User/Role Name',
+       Object_name(sdp.major_id, Db_id())                 'ObjectName',
+       sdp.permission_name,
+       sdp.grantee_principal_id,
+       *
+FROM   sys.database_permissions sdp
+       JOIN sys.database_principals db_usr
+         ON ( db_usr.principal_id = sdp.grantee_principal_id )
+WHERE  grantee_principal_id <> 0
+       AND class_desc = 'DATABASE'
+
+-- Section to display database - object level privilege to be granted to db users explicitly
+
+SELECT 'GRANT ' + permission_name + ' ON '
+       + Object_name(sdp.major_id, @db_id) + ' TO '
+       + db_usr.name COLLATE sql_latin1_general_cp1_ci_as
+                                          'Query to Grant explicit rights',
+       -- 'GRANT ' + sdp.permission_name  + db_usr.name    'User/Role Name',
+       db_usr.name                        'User/Role Name',
+       Object_name(sdp.major_id, Db_id()) 'ObjectName',
+       sdp.permission_name,
+       sdp.grantee_principal_id,
+       *
+FROM   sys.database_permissions sdp
+       JOIN sys.database_principals db_usr
+         ON ( db_usr.principal_id = sdp.grantee_principal_id )
+WHERE  grantee_principal_id <> 0
+       AND class_desc = 'OBJECT_OR_COLUMN'

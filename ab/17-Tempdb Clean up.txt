@@ -1,0 +1,53 @@
+--http://calyansql.blogspot.com/2012/04/shrink-tempdb-data-file-without-sql.html
+--Shrink TempDB Data File Without SQL Restart 
+
+We can shrink the tempdb data file without restarting the SQL Server using the following steps.
+
+First verify the space usage information from MDF file, If you find there is enough space to shrink then ensure there wont be any open transactions running on the tempdb and execute the below steps to shrink the TempDB Data File.
+
+
+DBCC FREEPROCCACHE
+GO
+DBCC DROPCLEANBUFFERS
+go
+DBCC FREESYSTEMCACHE ('ALL')
+GO
+DBCC FREESESSIONCACHE
+GO
+DBCC SHRINKFILE (TEMPDEV,1024)
+GO
+
+
+
+Unable to shrink TempDB. T-SQL to free all caches in TempDB database
+Problem:
+
+How many times has this happened that TempDB size has inflated any you really need to shrink TempDB and you cannot afford downtime? How to shrink TempDB in such scenarios?
+
+Solution:
+
+If you are not able to release space from TempDB because entire Space in TempDB will be unallocated space, Try the below T-SQL
+
+USE TempDB
+GO
+DBCC FREEPROCCACHE
+/*Clears the procedure cache*/
+GO
+DBCC DROPCLEANBUFFERS
+/*Forces all dirty pages for the current database to be written to disk and cleans the buffers*/
+GO
+DBCC FREESYSTEMCACHE ('ALL')
+/*Releases all unused cache entries from all caches*/
+GO
+DBCC FREESESSIONCACHE
+/*Flushes the distributed query connection cache*/
+GO
+CHECKPOINT
+/*Writes all dirty pages for the current database to disk*/
+GO
+Now you will be able to shrink TempDB as all the caches will be free in TempDB.
+
+I hope this has been informative and I’ll like to thank you for reading it.
+
+http://sqlworkbook.blogspot.com/2012/10/unable-to-shrink-tempdb-t-sql-to-free.html
+

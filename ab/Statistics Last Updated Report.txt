@@ -1,0 +1,14 @@
+
+
+SELECT OBJECT_NAME(A.object_id) AS Object_Name, A.name AS index_name, STATS_DATE(A.OBJECT_ID, index_id) AS StatsUpdated ,
+DATEDIFF(d,STATS_DATE(A.OBJECT_ID, index_id),getdate()) DaysOld
+FROM sys.indexes A
+INNER JOIN sys.tables B ON A.object_id = B.object_id
+WHERE A.name IS NOT NULL
+ORDER BY DATEDIFF(d,STATS_DATE(A.OBJECT_ID, index_id),getdate()) DESC
+
+------
+
+--SELECT name AS index_name, STATS_DATE(OBJECT_ID, index_id) AS StatsUpdated 
+--FROM sys.indexes
+--WHERE OBJECT_ID = OBJECT_ID('HumanResources.Department')

@@ -1,0 +1,111 @@
+SELECT   newid() as ID,  NETWORK_ID,  ADMINISTRATIVE_ID,  CUSTOMER_ID,  null RECORD_ID,  CONVERT(VARCHAR,GETDATE()-3,112) LP_DATE,  LP_TIME,  null LP_INTERVAL,  cast(avg(KW_IMP) as decimal(15,5)) KW_IMP,  cast(avg(KVAR_IMP) as decimal(15,5)) KVAR_IMP,  cast(avg(KVA_IMP) as decimal(15,5)) KVA_IMP,  cast(avg(AVG_PF) as decimal(15,5)) AVG_PF,  cast(avg(AVG_VOLTAGE) as decimal(15,5)) AVG_VOLTAGE,  cast(avg(AVG_CURRENT) as decimal(15,5)) AVG_CURRENT,  9 LP_STATUS,  1 IS_RECORD_EDITED, 1 RECORD_STATUS,  'Estimation_Job' CREATED_BY,  getdate() CREATE_DATE,  null UPDATE_BY,  null UPDATE_DATE,  'Job_Server' SERVER_IP,  MTR_NUMBER   FROM mdms.MDM_LOADPROFILE_DATA l (NOLOCK)  WHERE    NOT EXISTS  (  SELECT 1 FROM MDMS.MDM_LOADPROFILE_DATA LP (nolock) WHERE LP.MTR_NUMBER=l.MTR_NUMBER   AND LP.LP_DATE=CONVERT(VARCHAR,GETDATE()-3,112) AND LP.LP_TIME=l.LP_TIME   AND LP_STATUS IS NULL OR LP.LP_STATUS <> '9'  ) and    lp_date between CONVERT(VARCHAR,GETDATE()-(3+2),112) and CONVERT(VARCHAR,GETDATE()-(3+1),112)  GROUP BY   NETWORK_ID,ADMINISTRATIVE_ID,CUSTOMER_ID,LP_TIME,MTR_NUMBER
+
+
+select * from sys.dm_db_index_physical_stats(DB_ID('EESLNDMC'),NULL,NULL,NULL,NULL)
+WHERE AVG_FRAGMENTATION_IN_PERCENT >30
+
+select t2.name+'.'+t1.name  from sys.tables as t1,sys.schemas as t2 where t1.schema_id=t2.schema_id and object_id=404196490
+
+==>404196490 ==> FEP.FEP_TRANSACTION_LOG
+sp_helpindex 'fep.FEP_EVENT_MASTER'
+
+
+1)FEP_EVENT_MASTER
+
+
+UPDATE STATISTICS fep.FEP_INSTANTANEOUS_DATA   WITH FULLSCAN;
+UPDATE STATISTICS fep.FEP_ENERGY_DATA   WITH FULLSCAN;
+UPDATE STATISTICS fep.fep_demand_Data  WITH FULLSCAN;
+UPDATE STATISTICS fep.FEP_LOADPROFILE_DATA  WITH FULLSCAN;
+update statistics fep.FEP_EOB_DATA with fullscan;
+update statistics fep.FEP_TODEOB_DATA with fullscan;
+update statistics fep.fep_eob_dmd with fullscan ;
+update statistics fep.FEP_TODEOB_DMD with fullscan ;
+update statistics mdms.VEE_CHECK_STATUS with fullscan ;
+
+ALTER INDEX [PK_FactInternetSales_SalesOrderNumber_SalesOrderLineNumber]
+ON [dbo].[FactInternetSales]
+REBUILD PARTITION = ALL
+WITH (ONLINE= ON);
+
+alter index all on CDB.METER_MASTER rebuild with (online = on);
+alter index all on CDB.CONSUMER_METER_RELATION rebuild with (online = on);
+alter index all on CDB.CONSUMER_MASTER rebuild with (online = on);
+alter index all on CDB.SIM_MASTER rebuild with (online = on);
+alter index all on CDB.METER_FEILD_DEVICE_RELATION rebuild with (online = on);
+alter index all on CDB.FIELD_DEVICE_M rebuild with (online = on);
+alter index all on cdb.EMPLOYEE_MASTER rebuild  with (online = on);
+alter index all on FEP.FEP_JOB_SCHEDULE_LOG rebuild  with (online = on);
+alter index all on cdb.RBAC_ROLE_M rebuild  with (online = on);
+alter index all on cdb.RBAC_ROLE_M rebuild  with (online = on);
+alter index all on cdb.METER_FEILD_DEVICE_RELATION rebuild  with (online = on);
+alter index all on cdb.RBAC_OBJECT_M rebuild  with (online = on);
+alter index all on cdb.RBAC_RESOURCE_M rebuild  with (online = on);
+alter index  CLU_FEPEOBED_RESETDT  on  FEP.FEP_EOB_DATA rebuild  with (online = on);
+alter index  IDX_FEPEOBED_MTRNO  on  FEP.FEP_EOB_DATA rebuild  with (online = on);
+alter index  PK_FEP_EOB_DATA  on  FEP.FEP_EOB_DATA rebuild  with (online = on);
+alter index all on DWH.LOADPROFILE_DATA rebuild  with (online = on);
+alter index  CLU_FEPLP_CAPTURETIME  on  FEP.FEP_LOADPROFILE_DATA rebuild  with (online = on);
+alter index  PK_FEP_LOADPROFILE_DATA  on FEP.FEP_LOADPROFILE_DATA rebuild  with (online = on);
+alter index all on FEP.FEP_DEVICE_IP_ADDRESS rebuild  with (online = on)
+alter index all on DWH.ENERGY_DATA rebuild  with (online = on);
+alter index all on FEP.FEP_ENERGY_DATA rebuild  with (online = on);
+alter index  CLU_FEPINST_READDT  on FEP.FEP_INSTANTANEOUS_DATA rebuild  with (online = on);
+alter index  IDX_FEPINST_MTRNO  on FEP.FEP_INSTANTANEOUS_DATA rebuild  with (online = on);
+alter index  PK_FEP_INSTANTANEOUS_DATA  on FEP.FEP_INSTANTANEOUS_DATA rebuild  with (online = on);
+alter index  IDX_FEPTL_  on  FEP.FEP_TRANSACTION_LOG rebuild  with (online = on);
+alter index  IDX_FEPTL_MSG  on  FEP.FEP_TRANSACTION_LOG rebuild  with (online = on);
+alter index  IDX_FEPTL_REQTIM  on  FEP.FEP_TRANSACTION_LOG rebuild  with (online = on);
+alter index  PK_FEPTL_ID  on  FEP.FEP_TRANSACTION_LOG rebuild;
+alter index  CLU_FEPPF_EVENTDT on  FEP.FEP_POWERFAILURE_DETAILS rebuild  with (online = on);
+alter index  IDX_FEPPF_MTRNO  on  FEP.FEP_POWERFAILURE_DETAILS rebuild  with (online = on);
+alter index  PK_FEP_POWERFAILURE_DETAILS  on  FEP.FEP_POWERFAILURE_DETAILS rebuild  with (online = on);
+alter index all on FEP.FEP_DEMAND_DATA rebuild  with (online = on);
+alter index all on FEP.QRTZ_FIRED_TRIGGERS rebuild  with (online = on);
+alter index all on FEP.FEP_TODEOB_DATA rebuild  with (online = on);
+alter index all on FEP.FEP_DLMS_GROUP_CONFIG rebuild  with (online = on);
+alter index  CLU_FEPDD_METERTIME  on  FEP.FEP_DEMAND_DATA rebuild  with (online = on);
+alter index  IDX_FEPDD_MTRNO  on  FEP.FEP_DEMAND_DATA rebuild  with (online = on);
+alter index  PK_FEPDD_ID  on  FEP.FEP_DEMAND_DATA rebuild  with (online = on);
+alter index all on FEP.FEP_POWERFAILURE_DETAILS rebuild  with (online = on);
+alter index all on MDMS.MDM_ENERGY_DATA rebuild  with (online = on);
+alter index all on MDMS.MDM_EOB_DATA rebuild  with (online = on);
+alter index all on cdb.SIM_MASTER rebuild  with (online = on);
+alter index all on MDMS.MDM_EOB_DMD rebuild  with (online = on);
+alter index  CLU_MDMINST_READDT on  MDMS.MDM_INSTANTANEOUS_DATA rebuild  with (online = on);
+alter index  IDX_MDMINST_MTRNO  on  MDMS.MDM_INSTANTANEOUS_DATA rebuild  with (online = on);
+alter index  PK_MDM_INSTANTANEOUS_DATA  on  MDMS.MDM_INSTANTANEOUS_DATA rebuild  with (online = on);
+alter index  CLU_MDMLP_LPDT  on  MDMS.MDM_LOADPROFILE_DATA rebuild  with (online = on);
+alter index  IDX_MDMLP_MTRNO  on MDMS.MDM_LOADPROFILE_DATA rebuild  with (online = on);
+alter index  PK_MDM_LOADPROFILE_DATA  on  MDMS.MDM_LOADPROFILE_DATA rebuild  with (online = on);
+alter index CLU_MSMTODEOBED_CRDT  on  MDMS.MDM_TODEOB_DATA rebuild  with (online = on);
+alter index  IDX_MDMTODEOBED_EOBID  on MDMS.MDM_TODEOB_DATA rebuild  with (online = on);
+alter index  MDM_TODEOB_DATA_PK  on MDMS.MDM_TODEOB_DATA rebuild  with (online = on);
+alter index  CLU_FEPEVENT_EVENTDT  on  FEP.FEP_EVENT_DETAILS rebuild  with (online = on);
+alter index  IDX_FEPEVENT_MTRNO  on  FEP.FEP_EVENT_DETAILS rebuild  with (online = on);
+alter index  PK_FEP_EVENT_DETAILS  on  FEP.FEP_EVENT_DETAILS rebuild  with (online = on);
+alter index all on FEP.FEP_EVENT_MAPPING rebuild  with (online = on);
+
+ALTER INDEX [PK_FactInternetSales_SalesOrderNumber_SalesOrderLineNumber]
+ON [dbo].[FactInternetSales]
+REBUILD PARTITION = ALL
+WITH (ONLINE= ON);
+
+ALTER INDEX IndexName ON TableName   Rebuild  WITH (fillfactor = 90, ONLINE=ON, MAXDOP=4) partition = 75
+
+
+
+
+DWH.COMMUNICATION_COUNT_DATA
+
+
+
+
+
+FEP_INSTANTANEOUS_DATA
+FEP_POWERFAILURE_DETAILS
+FEP_LOADPROFILE_DATA
+FEP.FEP_ENERGY_DATA
+
+
+

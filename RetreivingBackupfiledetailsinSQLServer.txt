@@ -1,0 +1,26 @@
+SELECT
+CONVERT(CHAR(100), SERVERPROPERTY('Servername')) AS Server
+, B.database_name
+, B.backup_start_date
+, B.backup_finish_date
+, B.user_name
+, CASE B.type
+WHEN 'D' THEN 'Database'
+WHEN 'L' THEN 'Log'
+WHEN 'I' THEN 'Differential database'
+WHEN 'F' THEN 'File or filegroup'
+WHEN 'G' THEN 'Differential file'
+WHEN 'P' THEN 'Partial'
+WHEN 'Q' THEN 'Differential partial'
+END AS backup_type
+, B.server_name 
+, B.machine_name 
+, B.backup_size
+, A.physical_device_name
+, B.name AS backupset_name
+FROM msdb.dbo.backupmediafamily A
+JOIN msdb.dbo.backupset B 
+ON A.media_set_id = B.media_set_id
+WHERE (CONVERT(datetime, B.backup_start_date, 102) &gt;= GETDATE() - 7)
+ORDER BY
+B.backup_finish_date DESC

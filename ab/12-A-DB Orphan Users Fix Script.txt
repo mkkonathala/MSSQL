@@ -1,0 +1,30 @@
+--Orphan User:
+
+--An orphan user is a user in a SQL Server database that is not associated with a SQL Server login.
+
+-- Script to check the orphan user
+
+EXEC sp_change_users_login 'Report'
+
+--Use below code to fix the Orphan User issue
+
+use dbname --> replace 'dbname' with the required db name
+go
+DECLARE @username varchar(25)
+DECLARE fixOrphanusers CURSOR
+FOR
+SELECT UserName = name FROM sysusers
+WHERE issqluser = 1 and (sid is not null and sid <> 0x0)
+and suser_sname(sid) is null
+ORDER BY name
+OPEN fixOrphanusers
+FETCH NEXT FROM fixOrphanusers
+INTO @username
+WHILE @@FETCH_STATUS = 0
+BEGIN
+EXEC sp_change_users_login 'update_one', @username, @username
+FETCH NEXT FROM fixOrphanusers
+INTO @username
+END
+CLOSE fixOrphanusers
+DEALLOCATE fixOrphanusers

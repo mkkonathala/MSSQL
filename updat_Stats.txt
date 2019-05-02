@@ -1,0 +1,86 @@
+
+
+
+EXEC sp_MSForEachTable 'UPDATE STATISTICS ? WITH FULLSCAN;'
+--
+
+process ad blocking
+-------------------------
+SELECT * FROM SYS.SYSPROCESSES  -really just a system view
+
+select * from sys.dm_exec_requests
+
+--DBS AND FILES
+---------------------
+SELECT * FROM SYS.DM_DB_file_space_usage
+
+--Indexs
+-----------
+select object_name(object_id) as TableName,* from sys.dm_db_index_usage_stats where 
+db_name(database_id)='CompressionDemo'
+
+select * from sys.dm_db_index_physical_stats(NULL,NULL,NULL,NULL,NULL)
+
+--OS
+select * from sys.dm_os_performance_counters
+
+select * from sys.dm_os_sys_info
+
+select * from sys.dm_os_windows_info
+
+select * from sys.dm_db_index_physical_stats(DB_ID('EESLNDMC'),NULL,NULL,NULL,NULL)
+WHERE AVG_FRAGMENTATION_IN_PERCENT >30
+
+1121439069,1249439525,1313439753,1809441520,1873441748,1985442147,2107154552,
+
+begin tran
+commit tran
+
+select t2.name+'.'+t1.name  from sys.tables as t1,sys.schemas as t2 where t1.schema_id=t2.schema_id and object_id=2107154552
+--1484
+
+=====================================================
+
+ DECLARE @SQL VARCHAR(1000) 
+DECLARE @DB sysname 
+
+DECLARE curDB CURSOR FORWARD_ONLY STATIC FOR 
+   SELECT [name] 
+   FROM master..sysdatabases
+   WHERE [name] IN ('MASTER','MSDB')
+   ORDER BY [name]
+    
+OPEN curDB 
+FETCH NEXT FROM curDB INTO @DB 
+WHILE @@FETCH_STATUS = 0 
+   BEGIN 
+       SELECT @SQL = 'USE [' + @DB +']' + CHAR(13) + 'EXEC sp_updatestats' + CHAR(13) 
+       PRINT @SQL 
+       FETCH NEXT FROM curDB INTO @DB 
+   END 
+   
+CLOSE curDB 
+DEALLOCATE curDB
+
+
+
+----ALTER LOGIN sa WITH PASSWORD = 'aEm*iSlc)L!8' UNLOCK
+==============================================================================================
+
+sp_helpstats N 'tablename','ALL'
+GO
+--------------------------------
+
+
+SELECT 
+OBJECT_NAME([SP].[OBJECT_ID]) AS 'TABLE',
+SP.STATS_ID AS STATUS_ID,
+S.NAME AS STATISTIC,
+SP.LAST_UPDATED AS LAST_UPDATED,
+SP.ROWS,
+SP.ROWS_SAMPLED,
+SP.UNFILTERED_ROWS,
+SP.MODIFICATION_COUNTER AS MODIFICATIONS
+FROM SYS.STATS AS S
+OUTER APPLY SYS.dm_db_stats_properties(s.object_id,s.stats_id) as sp
+where s.object_id=object_id(N'tablename');

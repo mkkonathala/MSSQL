@@ -1,0 +1,38 @@
+--Query to Find time remaining to complete database backup or restore in SQL 2005 
+--http://www.sanssql.com/2008/11/query-to-find-time-remaining-to.html
+
+USE master
+GO
+
+SELECT
+          Percent_Complete,
+          Start_Time ,
+          Command,
+          b.Name AS DatabaseName, --Sometimes this will be "Main" as the database will not be accesiable.
+          DATEADD(ms,estimated_completion_time,GETDATE()) AS RemainTime,
+          (estimated_completion_time/1000/60) AS MinutesToFinish
+FROM sys.dm_exec_requests a
+          INNER JOIN sys.databases b
+          ON a.database_id = b.database_id
+WHERE
+          Command like '%Restore%'
+          OR Command like '%Backup%'
+          AND Estimated_Completion_Time > 0 
+
+
+**********************************************************************************************************
+
+USE master
+GO
+
+SELECT 
+
+	session_id as SPID, 
+	command, a.text AS Query, 
+	start_time, percent_complete, 
+	dateadd(second,estimated_completion_time/1000, 
+	getdate()) as estimated_completion_time
+FROM sys.dm_exec_requests r 
+	CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) a
+WHERE 
+	r.command in ('BACKUP DATABASE','RESTORE DATABASE') 

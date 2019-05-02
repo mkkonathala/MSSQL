@@ -1,0 +1,37 @@
+-- Memory Information
+
+select 
+cast(total_physical_memory_kb/1024.00/1000 as numeric(8,2)) as Phys_Mem_GB,
+cast(available_physical_memory_kb/1024.00/1000 as numeric(8,2))as Available_Phys_Mem_GB,
+cast(total_page_file_kb/1024.00/1000 as numeric(8,2)) as total_page_file_GB,
+cast(available_page_file_kb/1024.00/1000 as numeric(8,2)) as available_page_file_GB,
+cast(system_cache_kb/1024.00/1000 as numeric(8,2)) as system_cache_GB,
+cast(kernel_paged_pool_kb/1024.00/1000 as numeric(8,2)) as kernel_paged_pool_GB,
+cast(kernel_nonpaged_pool_kb/1024.00/1000 as numeric(8,2)) as kernel_nonpaged_pool_GB,
+system_high_memory_signal_state,
+system_low_memory_signal_state,
+system_memory_state_desc
+from sys.dm_os_sys_memory
+
+
+--SQL Server 2008 system and memory Information
+
+
+select 
+cpu_ticks,ms_ticks,cpu_count,hyperthread_ratio,
+cast(physical_memory_in_bytes/1024.00/1024.00/1000 as numeric(8,2)) as physical_memory_GB,
+cast(virtual_memory_in_bytes/1024.00/1024.00/1000 as numeric(8,2)) as virtual_memory_GB,
+cast(bpool_committed*8/1024.00/1000 as numeric(8,2)) as bpool_committed_GB ,
+cast(bpool_commit_target*8/1024.00/1000 as numeric(8,2)) as bpool_commit_target_GB,
+cast(bpool_visible*8/1024.00/1000 as numeric(8,2)) as bpool_visible_GB,
+cast(stack_size_in_bytes/1024.00 as numeric(8,2)) as stack_size_in_bytes_KB,
+os_quantum,os_error_mode,
+os_priority_class,max_workers_count,
+scheduler_count,scheduler_total_count,
+deadlock_monitor_serial_number,
+sqlserver_start_time_ms_ticks,
+sqlserver_start_time
+from sys.dm_os_sys_info
+
+
+

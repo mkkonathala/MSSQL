@@ -1,0 +1,43 @@
+/*	
+Purpose :    Part 1 - Find Orphaned Users, Part 2 - Fix Orphaned Users
+
+Notes : sp_change_users_login maps an existing database user to a SQL Server login. This feature will be removed in a future version of 
+Microsoft SQL Server. Avoid using this feature in new development work, and plan to modify applications that 
+currently use this feature. Use ALTER USER instead. (http://msdn.microsoft.com/en-us/library/ms174378%28v=SQL.105%29.aspx)
+
+*/
+
+--Part 1 - Find orphaned users in current Database
+
+sp_change_users_login @Action='Report';
+
+
+--Part 2 - Fix orphaned users in current Database
+
+DECLARE @SQL VARCHAR(100)
+DECLARE curSQL CURSOR
+        FOR SELECT
+                'EXEC sp_change_users_login ''UPDATE_ONE'', ''' + name
+                + ''', ''' + name + ''''
+            FROM
+                sysusers
+            WHERE
+                issqluser = 1
+                AND name NOT IN ('guest', 'dbo', 'sys', 'INFORMATION_SCHEMA')
+OPEN curSQL
+FETCH curSQL INTO @SQL
+WHILE @@FETCH_STATUS = 0
+      BEGIN
+            EXEC (
+                  @SQL
+                )
+            FETCH curSQL INTO @SQL
+      END
+CLOSE curSQL
+DEALLOCATE curSQL
+GO
+
+--Same as Part 1
+--You can comment this part out, but it shows you that the orphaned users were actually fixed.
+
+sp_change_users_login @Action='Report'

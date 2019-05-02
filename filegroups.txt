@@ -1,0 +1,13 @@
+SELECT * FROM SYS.FILEGROUPS
+
+SELECT * FROM SYS.DATABASE_FILES
+
+
+SELECT df.file_id,df.name, ds.name as filegroup from sys.database_files df
+inner join sys.data_spaces ds
+on df.data_space_id=ds.data_space_id
+
+
+select @@TRANCOUNT
+
+select name,recovery_model_desc,log_reuse_wait_desc from sys.databases

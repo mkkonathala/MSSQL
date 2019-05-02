@@ -1,0 +1,130 @@
+backup
+---------
+full
+----
+backup database dbname
+to disk ='path.bak'
+with init,format,stats=10
+
+
+with initi=recreate the file every time
+format=backup header information
+stats= showing for every 10 percent
+
+
+LOG
+-----
+
+backup log dbname
+to 
+disk='path.trn'
+
+DIFFERENTIAL
+-----------------
+BACKUP DATABASE DBNAME
+TO disk='path.bak'
+with init, format, stats=10,
+differential
+
+FILEGROUP
+--------------
+BACKUP DATABASE DBNAME
+filegroup='filegroupname'
+to disk ='path.bak'
+with init,format, stats=10
+
+SYSTEM BACKUP
+--------------------
+BACKUP DATABASE MASTER
+TO DISK ='PATHDB.BAK'
+WITH init, format
+
+backup database msdb
+to disk ='path.bak'
+with init, format
+
+backup database model
+to disk ='path.bak'
+with init,format
+
+we can't backup testdb. it is completed recreat with when the db start
+
+master database will have full backup.
+
+backup log msdb
+to disk ='path.trn'
+with init,format
+
+backup log model
+to disk ='path.trn'
+with init, format
+
+
+RESTORE
+------------
+full
+----
+restore database dbname
+for disk='path.bak'
+with stats=10
+
+restore database dbname
+for disk='path.bak'
+with stats=10,replace
+
+
+RESTORE WITH MOVE
+----------------------------
+
+restore database dbname
+for disk ='path.bak'
+with 
+move '' to ''
+move '' to ''
+stats=10,replace
+
+restore filelistonly
+from disk='dbpath.bak'
+
+
+RESTORE UNDER DIFFERENT NAME
+-------------------------------------------
+RESTORE DATABASE DBNAME
+FROM DISK='PATH.BAK'
+WITH 
+MOVE NAMELDF TO 'NEWPATH'
+MOVE FD1 TO 'NEWFD1'
+MOVE FD2 TO 'NEWFD2'
+MOVE FD3 TO 'NEWFD3'
+MOVE FD4 TO 'NEWFD4'
+stats=10, replace
+
+Restoring Logs
+===========
+full
+----
+restore database dbname1
+from disk ='path1.bak'
+with stats=10, norecovery
+
+diff
+-----
+
+restore log dbname1
+from disk='pathlog1.trn'
+with stats=10, norecovery
+
+restore log dbname1
+from disk='pathlog2.trn'
+with stats=10, norecovery
+
+
+restore log dbname1
+from disk='pathlog3.trn'
+with stats=10, norecovery
+--standy='path_restore.txt' 
+
+restore database dbname1
+with recovery
+
+
